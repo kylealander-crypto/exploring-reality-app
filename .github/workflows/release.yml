@@ -1,0 +1,26 @@
+name: Release the app
+
+on:
+  push:
+    branches: [main]
+    paths: ['ExploringReality.apk', 'build.txt']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read build number
+        id: b
+        run: echo "n=$(tr -dc '0-9' < build.txt)" >> "$GITHUB_OUTPUT"
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-${{ steps.b.outputs.n }}
+          name: Exploring Reality (build ${{ steps.b.outputs.n }})
+          body: Exploring Reality 4.0 (2D). Install over the previous build; saves are kept.
+          files: ExploringReality.apk
+          make_latest: true
